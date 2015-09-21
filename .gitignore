@@ -1,0 +1,51 @@
+#########
+# Unity #
+#########
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]in/
+[Bb]uild/
+Bundles/
+
+###############################
+# Visual Studio / MonoDevelop #
+###############################
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.pidb
+*.userprefs
+
+###########
+# Blender #
+###########
+*.blend[123456789]
+
+################
+# Sublime Text #
+################
+*.sublime-project
+*.sublime-workspace
+
+#################
+# Visual Studio #
+#################
+.vscode/
+UnityVS/
+
+###########
+# OS Junk #
+###########
+.DS_Store
+.DS_Store?
+._*
+*.swp
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+$RECYCLE.BIN/
