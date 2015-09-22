@@ -15,6 +15,13 @@ public class SoundCloudWWW : MonoBehaviour
 
     private const int LISTEN_PORT = 8080;
 
+    public bool authenticated { get; private set; }
+
+    protected void Awake()
+    {
+        authenticated = false;
+    }
+
     public IEnumerator ProcessResolveURL(string url, Action<bool, string> callback)
     {
         bool success = false;
@@ -96,7 +103,7 @@ public class SoundCloudWWW : MonoBehaviour
             callback(clip);
     }
 
-    public IEnumerator AuthenticateUser()
+    public IEnumerator AuthenticateUser(Action<bool> callback)
     {
         string uriPrefix = "http://localhost:" + LISTEN_PORT + "/";
         string connectUrl = CONNECT_URL + "?";
@@ -120,7 +127,14 @@ public class SoundCloudWWW : MonoBehaviour
         authListener.Start();
         Application.OpenURL(connectUrl);
 
-        yield return StartCoroutine(WaitForAuthentication());
+        // TODO: Add Authentication Timeout and Cancel.
+        while (!authenticated)
+        {
+            yield return 0;
+        }
+
+        if (callback != null)
+            callback(authenticated);
     }
 
     private void ProcessAuthRequest(HttpListenerContext context)
@@ -137,12 +151,8 @@ public class SoundCloudWWW : MonoBehaviour
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             outputStream.Write(buffer, 0, buffer.Length);
         }
-    }
 
-    private IEnumerator WaitForAuthentication()
-    {
-        // TODO
-        yield break;
+        authenticated = true;
     }
 }
 

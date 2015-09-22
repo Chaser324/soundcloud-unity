@@ -1,8 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿
+namespace SoundCloud
+{
 
 public class SoundCloudTrack : DataObject<SoundCloudTrack>
 {
+    public const string API_CALL = "http://api.soundcloud.com/tracks/{0}?client_id={1}";
+
     public int id { get; protected set; }
     public string created_at { get; protected set; }
     public int user_id { get; protected set; }
@@ -43,8 +46,10 @@ public class SoundCloudTrack : DataObject<SoundCloudTrack>
     public int download_count { get; protected set; }
     public int playback_count { get; protected set; }
     public int favoritings_count { get; protected set; }
-    //public SoundCloudUser user { get; protected set; }
+    public SoundCloudUser user { get; protected set; }
 
     // authenticated requests only
     public bool user_favorite { get; protected set; }
+}
+
 }
