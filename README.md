@@ -3,7 +3,10 @@
 
 **STATUS: NOT READY. Don't try to use this yet. It doesn't work.**
 
-* Windows, OSX, Linux. Basic data retrieval should work anywhere. Full functionality on iOS/Android possible but not currently implemented. Unsure about the potential of full functionality on other platforms (PS4, Xbox One, etc.) - would likely require a change to the way the audio transcoding works.
+* **Access SoundCloud API Data** - Including users, tracks, playlists, groups, and comments.
+* **Play Tracks from SoundCloud** - Generate an AudioClip from any SoundCloud track URL or ID that you can pass along to an AudioSource and playback in your game.
+* **Basic Authentication Support** - Allow users to sign in to their own SoundCloud account to allow access to functions such as liking tracks and following other users.
+* **Windows, OSX, Linux** - Basic data retrieval should work anywhere. Full functionality on iOS/Android is possible but not currently a consideration. Unsure about the potential of full functionality on other platforms (PS4, Xbox One, etc.) - at a minimum it would require significant changes to the way audio transcoding is handled.
 
 ## Using SoundCloud-Unity
 
