@@ -1,7 +1,9 @@
 # SoundCloud-Unity
-> A wrapper of the SoundCloud API for use in Unity projects.
+> A wrapper of the SoundCloud® API for use in Unity projects.
 
 **STATUS: NOT READY. Don't try to use this yet. It doesn't work.**
+
+* Windows, OSX, Linux. Basic data retrieval should work anywhere. Full functionality on iOS/Android possible but not currently implemented. Unsure about the potential of full functionality on other platforms (PS4, Xbox One, etc.) - would likely require a change to the way the audio transcoding works.
 
 ## Using SoundCloud-Unity
 
@@ -21,7 +23,7 @@ Use of the SoundCloud API in your game requires you to meet SoundCloud's [Terms 
 1. If the sound is public, link to the SoundCloud URL containing the work.
 1. If the sound is private, link to the profile of the creator.
 
-An attempt has been made to document in the code things that are done to comply with the API [Terms of Use][]. Please do not attempt to remove these code features.
+An attempt has been made to document in this library's code things that are done to comply with the API [Terms of Use][]. Please do not attempt to remove these features.
 
 ### API Documentation
 Full documentation of the SoundCloud API can be found at the [SoundCloud Developers][] site.

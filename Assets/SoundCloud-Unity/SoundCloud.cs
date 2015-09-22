@@ -1,36 +1,52 @@
-using System;
 using System.Collections;
 using System.IO;
 using System.Net;
-using System.Threading;
 using UnityEngine;
 
 namespace SoundCloud
 {
-	
+
+[Persistent]
 public class SoundCloud : SingletonBehaviour<SoundCloud>
 {
     #region Constants & Enums
 
-    private const string CONNECT_URL = "https://soundcloud.com/connect/";
-    private const int LISTEN_PORT = 8080;
+    public static readonly string WORKING_DIRECTORY =
+        Application.temporaryCachePath + Path.DirectorySeparatorChar + "SoundCloud";
+
+    private const string TEMP_FILENAME = "temp.mp3";
 
     #endregion
 
     #region Public Variables & Auto-Properties
 
-    public bool connected { get; private set; }
+    public bool initialized { get; private set; }
+    public bool authenticated { get; private set; }
+
+    #endregion
+
+    #region Private Variables
+
+    private SoundCloudWWW web;
+    private SoundCloudTranscoder transcoder;
 
     #endregion
 
     #region Unity Events
 
+    protected override void AwakeSingleton()
+    {
+        base.AwakeSingleton();
+        initialized = false;
+    }
+
     protected IEnumerator Start()
     {
-        //WWW www = new WWW();
-        //yield return www;
-        //SoundCloudTrack track = new SoundCloudTrack();
-        //track.Deserialize(www.text);
+        if (!Directory.Exists(WORKING_DIRECTORY))
+            Directory.CreateDirectory(WORKING_DIRECTORY);
+
+        transcoder = gameObject.AddComponent<SoundCloudTranscoder>();
+        web = gameObject.AddComponent<SoundCloudWWW>();
 
         SoundCloudTrack track = null;
         string redirect = "";
@@ -59,13 +75,15 @@ public class SoundCloud : SingletonBehaviour<SoundCloud>
         ffmpeg.Start();
 
         while (!transcoded)
-            yield return 0;        
+            yield return 0;
 
         yield return StartCoroutine(WebRequestAudioClip("file:///" + convertedFile, (retVal) => clip = retVal));
 
         AudioSource source = gameObject.AddComponent<AudioSource>();
         source.clip = clip;
         source.Play();
+
+        initialized = true;
     }
 
     #endregion
@@ -76,127 +94,43 @@ public class SoundCloud : SingletonBehaviour<SoundCloud>
     {
     }
 
+    public void GetUser()
+    {
+    }
+
+    public void GetTrack()
+    {
+    }
+
+    public void GetPlaylist()
+    {
+    }
+
+    public void GetGroup()
+    {
+    }
+
+    public void GetComments()
+    {
+    }
+
+    public void GetMe()
+    {
+    }
+
+    public void GetMeConnections()
+    {
+    }
+
+    public void GetMeActivities()
+    {
+    }
+
     #endregion
 
     #region Private Methods
 
-    private IEnumerator WebRequest(string uri, Action<WWW> callback)
-    {
-        WWW www = new WWW(uri);
-        yield return www;
-
-        if (!string.IsNullOrEmpty(www.error))
-        {
-            Debug.Log(www.error);
-            yield break;
-        }
-
-        if (callback != null)
-            callback(www);
-    }
-
-    private IEnumerator WebRequestObject<T>(string uri, Action<T> callback) where T : DataObject<T>, new()
-    {
-        using (WWW www = new WWW(uri))
-        {
-            yield return www;
-
-            if (!string.IsNullOrEmpty(www.error))
-            {
-                Debug.Log(www.error);
-                yield break;
-            }
-
-            T target = new T();
-            target.Deserialize(www.text);
-
-            if (callback != null)
-                callback(target);
-        }
-    }
-
-    private IEnumerator WebRequestFile(string uri, Action<string> callback)
-    {
-        WWW www = new WWW(uri);
-        yield return www;
-
-        if (!string.IsNullOrEmpty(www.error))
-        {
-            Debug.Log(www.error);
-            yield break;
-        }
-
-        string tempFile = Application.temporaryCachePath + "/temp.mp3";
-        File.WriteAllBytes(tempFile, www.bytes);
-        Debug.Log(tempFile);
-
-        if (callback != null)
-            callback(tempFile);        
-    }
-
-    private IEnumerator WebRequestAudioClip(string uri, Action<AudioClip> callback)
-    {
-        WWW www = new WWW(uri);
-        yield return www;
-
-        if (!string.IsNullOrEmpty(www.error))
-        {
-            Debug.Log(www.error);
-            yield break;
-        }
-
-        if (callback != null)
-            callback(www.audioClip);
-    }
-
-    private IEnumerator AuthenticateUser() {
-        string uriPrefix ="http://localhost:" + LISTEN_PORT + "/";
-        string connectUrl = CONNECT_URL + "?";
-        connectUrl += "client_id=" + SoundCloudConfig.CLIENT_ID;
-        connectUrl += "&redirect_uri=" +  WWW.EscapeURL(uriPrefix + "unity-game-authentication");
-        connectUrl += "&response_type=code";
-
-        HttpListener listener = new HttpListener();
-        listener.Prefixes.Add(uriPrefix);
-        listener.Start();
-
-        Thread authListener = new Thread(
-            () =>
-            {
-                HttpListenerContext context = listener.GetContext();
-                ProcessAuthRequest(context);
-                listener.Stop();
-            }
-        );
-
-        authListener.Start();
-        Application.OpenURL(connectUrl);
-
-        yield return StartCoroutine(WaitForAuthentication());
-
-        yield break;
-    }
-
-    private void ProcessAuthRequest(HttpListenerContext context)
-    {
-        HttpListenerRequest req = context.Request;
-        HttpListenerResponse res = context.Response;
-
-        Debug.Log(req.Url);
-
-        using (Stream outputStream = res.OutputStream)
-        {
-            string responseString = "<HTML><BODY>Authenticated! You can now return to your game.</BODY></HTML>";
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-            outputStream.Write(buffer, 0, buffer.Length);
-        }
-    }
-
-    private IEnumerator WaitForAuthentication()
-    {
-        // TODO
-        yield break;
-    }
+    
 
     #endregion
 }
