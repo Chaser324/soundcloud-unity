@@ -35,6 +35,7 @@ Bundles/
 #################
 .vscode/
 UnityVS/
+UnityVS.meta
 
 ###########
 # OS Junk #
