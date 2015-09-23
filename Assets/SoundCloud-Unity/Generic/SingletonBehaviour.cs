@@ -1,6 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
+namespace SoundCloud
+{
+
 /// <summary>
 /// Attribute to define a Singleton that persists across scenes.
 /// </summary>
@@ -94,4 +97,6 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
             }
         }
     }
+}
+
 }

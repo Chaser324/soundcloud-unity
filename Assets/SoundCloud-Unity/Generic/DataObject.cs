@@ -1,5 +1,8 @@
 ﻿using FullSerializer;
 
+namespace SoundCloud
+{
+
 public class DataObject<T> where T : class
 {
     private static readonly fsSerializer serializer = new fsSerializer();
@@ -23,4 +26,6 @@ public class DataObject<T> where T : class
         fsData data = fsJsonParser.Parse(serializedData);
         return serializer.TryDeserialize<T>(data, ref target);
     }
+}
+
 }
