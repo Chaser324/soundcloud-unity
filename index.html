@@ -19,7 +19,7 @@
 
         <header>
           <h1>SoundCloud-Unity</h1>
-          <h2>A wrapper for the SoundCloud API for use in Unity projects.</h2>
+          <h2>A wrapper around the SoundCloud API for use in Unity projects.</h2>
         </header>
 
         <section id="downloads" class="clearfix">
@@ -33,12 +33,75 @@
         <section id="main_content">
           <p><strong>STATUS: NOT READY. Don't try to use this yet. It doesn't work.</strong></p>
 
+<ul>
+<li>
+<strong>Access SoundCloud API Data</strong> - Including users, tracks, playlists, groups, and comments.</li>
+<li>
+<strong>Play Tracks from SoundCloud</strong> - Generate an AudioClip from any SoundCloud track URL or ID that you can pass along to an AudioSource and playback in your game.</li>
+<li>
+<strong>Basic Authentication Support</strong> - Allow users to sign in to their own SoundCloud account to allow access to functions such as liking tracks and following other users.</li>
+<li>
+<strong>Windows, OSX, Linux</strong> - Basic data retrieval should work anywhere. Full functionality on iOS/Android is possible but not currently a consideration. Unsure about the potential of full functionality on other platforms (PS4, Xbox One, etc.) - at a minimum it would require significant changes to the way audio transcoding is handled.</li>
+</ul>
+
+<h2>
+<a id="using-soundcloud-unity" class="anchor" href="#using-soundcloud-unity" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using SoundCloud-Unity</h2>
+
+<p><em>TODO</em></p>
+
+<ul>
+<li>Install.</li>
+<li>Register App. (<a href="http://soundcloud.com/you/apps">http://soundcloud.com/you/apps</a>)</li>
+<li>Fill in Client ID.</li>
+<li>Get latest ffmpeg converters.</li>
+</ul>
+
+<h2>
+<a id="soundcloud-api-info" class="anchor" href="#soundcloud-api-info" aria-hidden="true"><span class="octicon octicon-link"></span></a>SoundCloud API Info</h2>
+
+<h3>
+<a id="use-requirements" class="anchor" href="#use-requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use Requirements</h3>
+
+<p>Use of the SoundCloud API in your game requires you to meet SoundCloud's <a href="https://developers.soundcloud.com/docs/api/terms-of-use">Terms of Use</a> and <a href="https://developers.soundcloud.com/docs/api/buttons-logos">Attribution Guidelines</a>. These requirements include but are not limited to:</p>
+
+<ol>
+<li>Credit the uploader as the creator of the sound.</li>
+<li>Credit SoundCloud as the source by including one of the logos found <a href="https://developers.soundcloud.com/docs/api/buttons-logos">here</a>.</li>
+<li>If the sound is public, link to the SoundCloud URL containing the work.</li>
+<li>If the sound is private, link to the profile of the creator.</li>
+</ol>
+
+<p>An attempt has been made to document in this library's code things that are done to comply with the API <a href="https://developers.soundcloud.com/docs/api/terms-of-use">Terms of Use</a>. Please do not attempt to remove these features.</p>
+
+<h3>
+<a id="api-documentation" class="anchor" href="#api-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>API Documentation</h3>
+
+<p>Full documentation of the SoundCloud API can be found at the <a href="https://developers.soundcloud.com/">SoundCloud Developers</a> site.</p>
+
+<h3>
+<a id="api-rate-limit" class="anchor" href="#api-rate-limit" aria-hidden="true"><span class="octicon octicon-link"></span></a>API Rate Limit</h3>
+
+<p>As of July 1, 2015, SoundCloud limits applications to 15,000 streams per day. More info <a href="https://developers.soundcloud.com/blog/limits">here</a>.</p>
+
+<p>If you encounter an issue with this, you can try applying for an increased rate limit <a href="https://docs.google.com/forms/d/16Vs0Ikv2HqH8UJPGmX5kF2Wy4Rx_qMpgDrL39ACJKyE/viewform">here</a> - no clue about the success rate of those who apply. Alternatively, you could try modifying this library to allow users to enter their own application client ID which would allow individual users to stream 15,000 sounds per day rather than all users using the same client ID and being limited to 15,000 streams per day among all users.</p>
+
+<h2>
+<a id="included-libraries" class="anchor" href="#included-libraries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Included Libraries</h2>
+
+<ul>
+<li><a href="https://github.com/jacobdufault/fullserializer">Full Serializer</a></li>
+</ul>
+
 <h2>
 <a id="credits" class="anchor" href="#credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Credits</h2>
 
-<p><strong>Chase Pettit</strong> - <a href="https://github.com/Chaser324">github</a>, <a href="http://twitter.com/chasepettit">twitter</a></p>
-
-<p><strong>Thanks</strong> - All of the <a href="http://www.driftstagegame.com/">Drift Stage</a> backers and supporters.</p>
+<ul>
+<li>
+<strong>Chase Pettit</strong> - <a href="https://github.com/Chaser324">github</a>, <a href="http://twitter.com/chasepettit">twitter</a>
+</li>
+<li>
+<strong>Thanks</strong> - All of the <a href="http://www.driftstagegame.com/">Drift Stage</a> backers and supporters.</li>
+</ul>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
