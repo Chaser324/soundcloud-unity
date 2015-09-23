@@ -8,7 +8,7 @@ using UnityEngine;
 namespace SoundCloud
 {
 
-public class SoundCloudWWW : MonoBehaviour
+public class SCWeb : MonoBehaviour
 {
     private const string CONNECT_URL = "https://soundcloud.com/connect/";
     private const string RESOLVE_URL = "http://api.soundcloud.com/resolve?url=";
@@ -27,20 +27,20 @@ public class SoundCloudWWW : MonoBehaviour
         bool success = false;
         WWW response = null;
         string resolvedURL = string.Empty;
-        string request = RESOLVE_URL + url + "&client_id=" + SoundCloudConfig.CLIENT_ID;
+        string request = RESOLVE_URL + url + "&client_id=" + SCConfig.CLIENT_ID;
 
         yield return StartCoroutine(WebRequest(request, (retVal) => response = retVal));
 
         if (string.IsNullOrEmpty(response.error))
         {
             // Construct base URL
-            SoundCloudGeneric data = new SoundCloudGeneric();
+            SCGeneric data = new SCGeneric();
             data.Deserialize(response.text);
 
             if (!string.IsNullOrEmpty(data.uri))
             {
                 success = true;
-                resolvedURL = data.uri + "?client_id=" + SoundCloudConfig.CLIENT_ID;
+                resolvedURL = data.uri + "?client_id=" + SCConfig.CLIENT_ID;
             }
 
             // TODO: Cache data so we don't retrieve it again
@@ -137,7 +137,7 @@ public class SoundCloudWWW : MonoBehaviour
     {
         string uriPrefix = "http://localhost:" + LISTEN_PORT + "/";
         string connectUrl = CONNECT_URL + "?";
-        connectUrl += "client_id=" + SoundCloudConfig.CLIENT_ID;
+        connectUrl += "client_id=" + SCConfig.CLIENT_ID;
         connectUrl += "&redirect_uri=" + WWW.EscapeURL(uriPrefix + "unity-game-authentication");
         connectUrl += "&response_type=code";
 

@@ -2,7 +2,7 @@
 namespace SoundCloud
 {
 
-public class SoundCloudPlaylist : DataObject<SoundCloudPlaylist>
+public class SCPlaylist : DataObject<SCPlaylist>
 {
     public const string API_CALL = "http://api.soundcloud.com/playlists/{0}?client_id={1}";
 

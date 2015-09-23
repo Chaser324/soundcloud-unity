@@ -2,7 +2,7 @@
 namespace SoundCloud
 {
 
-public class SoundCloudTrack : DataObject<SoundCloudTrack>
+public class SCTrack : DataObject<SCTrack>
 {
     public const string API_CALL = "http://api.soundcloud.com/tracks/{0}?client_id={1}";
 
@@ -46,7 +46,7 @@ public class SoundCloudTrack : DataObject<SoundCloudTrack>
     public int download_count { get; protected set; }
     public int playback_count { get; protected set; }
     public int favoritings_count { get; protected set; }
-    public SoundCloudUser user { get; protected set; }
+    public SCUser user { get; protected set; }
 
     // authenticated requests only
     public bool user_favorite { get; protected set; }

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SoundCloud
 {
 
-public class SoundCloudTranscoder : MonoBehaviour
+public class SCTranscoder : MonoBehaviour
 {
     private const float TIMEOUT = 15.0f;
 

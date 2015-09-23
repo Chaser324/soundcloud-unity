@@ -6,7 +6,7 @@ using System.IO;
 namespace SoundCloud
 {
 
-public class SoundCloudCache
+public class SCCache
 {
     private const int APIDATA_CAPACITY = 20;
     private const int URLRESOLVE_CAPCITY = 20;

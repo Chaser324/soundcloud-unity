@@ -28,9 +28,9 @@ public class SCManager : SingletonBehaviour<SCManager>
 
     private bool _initialized = false;
 
-    private SoundCloudWWW web;
-    private SoundCloudTranscoder transcoder;
-    private SoundCloudCache cache;
+    private SCWeb web;
+    private SCTranscoder transcoder;
+    private SCCache cache;
 
     #endregion
 
@@ -41,9 +41,9 @@ public class SCManager : SingletonBehaviour<SCManager>
         if (!Directory.Exists(WORKING_DIRECTORY))
             Directory.CreateDirectory(WORKING_DIRECTORY);
 
-        transcoder = gameObject.AddComponent<SoundCloudTranscoder>();
-        web = gameObject.AddComponent<SoundCloudWWW>();
-        cache = new SoundCloudCache();
+        transcoder = gameObject.AddComponent<SCTranscoder>();
+        web = gameObject.AddComponent<SCWeb>();
+        cache = new SCCache();
 
         _initialized = true;
     }
@@ -73,24 +73,24 @@ public class SCManager : SingletonBehaviour<SCManager>
         Instance.StartCoroutine(Instance.ProcessGenericDataCall(url, callback));
     }
 
-    public static void GetUser(string url, Action<SoundCloudUser> callback)
+    public static void GetUser(string url, Action<SCUser> callback)
     {
         Instance.StartCoroutine(Instance.ProcessDataCall(url, callback));
     }
 
-    public static void GetUser(int id, Action<SoundCloudUser> callback)
+    public static void GetUser(int id, Action<SCUser> callback)
     {
-        GetUser(string.Format(SoundCloudUser.API_CALL, id, SoundCloudConfig.CLIENT_ID), callback);
+        GetUser(string.Format(SCUser.API_CALL, id, SCConfig.CLIENT_ID), callback);
     }
 
-    public static void GetTrack(string url, Action<SoundCloudTrack> callback)
+    public static void GetTrack(string url, Action<SCTrack> callback)
     {
         Instance.StartCoroutine(Instance.ProcessDataCall(url, callback));
     }
 
-    public static void GetTrack(int id, Action<SoundCloudTrack> callback)
+    public static void GetTrack(int id, Action<SCTrack> callback)
     {
-        GetTrack(string.Format(SoundCloudTrack.API_CALL, id, SoundCloudConfig.CLIENT_ID), callback);
+        GetTrack(string.Format(SCTrack.API_CALL, id, SCConfig.CLIENT_ID), callback);
     }
 
     public static void GetTrackAudioClip(string url, Action<AudioClip> callback)
@@ -100,7 +100,7 @@ public class SCManager : SingletonBehaviour<SCManager>
 
     public static void GetTrackAudioClip(int id, Action<AudioClip> callback)
     {
-        GetTrackAudioClip(string.Format(SoundCloudTrack.API_CALL, id, SoundCloudConfig.CLIENT_ID), callback);
+        GetTrackAudioClip(string.Format(SCTrack.API_CALL, id, SCConfig.CLIENT_ID), callback);
     }
 
     public void GetPlaylist()
@@ -141,17 +141,17 @@ public class SCManager : SingletonBehaviour<SCManager>
         AudioClip clip = null;
 
         // Get the track data.
-        SoundCloudTrack track = null;
+        SCTrack track = null;
 
         if (!IsAPI(url))
             yield return StartCoroutine(web.ProcessResolveURL(url, (success, resolvedURL) => { if (success) url = resolvedURL; }));
 
         if (IsAPI(url))
-            yield return StartCoroutine(ProcessDataCall<SoundCloudTrack>(url, (retVal) => track = retVal));
+            yield return StartCoroutine(ProcessDataCall<SCTrack>(url, (retVal) => track = retVal));
 
         // Get the MP3 stream.
         string mp3FilePath = string.Empty;
-        yield return StartCoroutine(web.WebRequestFile(track.stream_url + "?client_id=" + SoundCloudConfig.CLIENT_ID, TEMP_FILENAME, (retVal) => mp3FilePath = retVal));
+        yield return StartCoroutine(web.WebRequestFile(track.stream_url + "?client_id=" + SCConfig.CLIENT_ID, TEMP_FILENAME, (retVal) => mp3FilePath = retVal));
 
         // Transcode to OGG.
         bool transcodeComplete = false;
@@ -175,7 +175,7 @@ public class SCManager : SingletonBehaviour<SCManager>
     private IEnumerator ProcessGenericDataCall(string url, Action<string, Type> callback)
     {
         // TODO: Refactor the way unknown generic data calls are handled based on automatically following
-        //       redirect and getting the "kind" and "uri" from the resulting SoundCloudGeneric.
+        //       redirect and getting the "kind" and "uri" from the resulting SCGeneric.
         Type returnType = null;
 
         if (!IsAPI(url))
@@ -184,9 +184,9 @@ public class SCManager : SingletonBehaviour<SCManager>
         if (IsAPI(url))
         {
             if (url.Contains("users"))
-                returnType = typeof(SoundCloudUser);
+                returnType = typeof(SCUser);
             else if (url.Contains("tracks"))
-                returnType = typeof(SoundCloudTrack);
+                returnType = typeof(SCTrack);
         }
 
         if (callback != null)

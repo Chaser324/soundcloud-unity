@@ -2,7 +2,7 @@
 namespace SoundCloud
 {
 
-public class SoundCloudGeneric : DataObject<SoundCloudGeneric>
+public class SCGeneric : DataObject<SCGeneric>
 {
     public const string API_CALL = "";
 

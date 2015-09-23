@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using FullSerializer;
+﻿using FullSerializer;
 
 public class DataObject<T> where T : class
 {

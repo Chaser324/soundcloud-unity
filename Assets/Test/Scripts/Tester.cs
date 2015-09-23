@@ -10,9 +10,9 @@ public class Tester : MonoBehaviour
 {
     private Text console;
     private Text input;
-    private AudioSource audio;
+    private AudioSource audioSource;
 
-    private SoundCloudTrack currentTrack;
+    private SCTrack currentTrack;
 
     private float[] musicSpectrum = new float[32];
 
@@ -28,7 +28,7 @@ public class Tester : MonoBehaviour
 
         console = GameObject.Find("OutputPanel/Text").GetComponent<Text>();
         input = GameObject.Find("SoundCloudURL/Text").GetComponent<Text>();
-        audio = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
 
         StartCoroutine(ShowTrackProgress());
         StartCoroutine(AnalyzeMusicSpectrum());
@@ -52,10 +52,10 @@ public class Tester : MonoBehaviour
 
     public void PauseTrack()
     {
-        if (audio.isPlaying)
-            audio.Pause();
+        if (audioSource.isPlaying)
+            audioSource.Pause();
         else
-            audio.Play();
+            audioSource.Play();
     }
 
     public void OpenArtistPage()
@@ -80,23 +80,23 @@ public class Tester : MonoBehaviour
 
     private void GetDataTypeCallback(string url, Type dataType)
     {
-        if (dataType == typeof(SoundCloudUser))
+        if (dataType == typeof(SCUser))
             SCManager.GetUser(url, GetUserCallback);
-        else if (dataType == typeof(SoundCloudTrack))
+        else if (dataType == typeof(SCTrack))
             SCManager.GetTrack(url, GetTrackCallback);
     }
 
-    private void GetUserCallback(SoundCloudUser user)
+    private void GetUserCallback(SCUser user)
     {
         console.text = user.ToString();
     }
 
-    private void GetTrackCallback(SoundCloudTrack track)
+    private void GetTrackCallback(SCTrack track)
     {
         console.text = track.ToString();
     }
 
-    private void PlayTrackDataCallback(SoundCloudTrack track)
+    private void PlayTrackDataCallback(SCTrack track)
     {
         currentTrack = track;
 
@@ -112,10 +112,10 @@ public class Tester : MonoBehaviour
 
     private void GetTrackAudioClipCallback(AudioClip clip)
     {
-        audio.clip = clip;
-        audio.volume = 1.0f;
-        audio.time = 0;
-        audio.Play();
+        audioSource.clip = clip;
+        audioSource.volume = 1.0f;
+        audioSource.time = 0;
+        audioSource.Play();
     }
 
     private void GetAlbumArtCallback(Texture2D image)
@@ -136,9 +136,9 @@ public class Tester : MonoBehaviour
 
         while (true)
         {
-            while (audio.isPlaying)
+            while (audioSource.isPlaying)
             {
-                trackProgress.fillAmount = audio.time / audio.clip.length;
+                trackProgress.fillAmount = audioSource.time / audioSource.clip.length;
                 yield return 0;
             }
             yield return 0;
@@ -169,10 +169,10 @@ public class Tester : MonoBehaviour
 
         while (true)
         {
-            while (audio.isPlaying)
+            while (audioSource.isPlaying)
             {
                 float[] spectrum = new float[1024];
-                audio.GetSpectrumData(spectrum, 0, FFTWindow.Hamming);
+                audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Hamming);
 
                 for (int i = 0; i < musicSpectrum.Length; i++)
                 {
