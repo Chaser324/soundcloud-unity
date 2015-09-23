@@ -13,6 +13,7 @@ public class Persistent : Attribute
 /// Singleton generic base class for classes derived from MonoBehaviour.
 /// </summary>
 /// <typeparam name="T">Instance class.</typeparam>
+[DisallowMultipleComponent]
 public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T instance = null;

@@ -20,14 +20,6 @@ public class SoundCloudCache
     private Queue<string> urlResolveQueue = new Queue<string>(URLRESOLVE_CAPCITY);
     private Queue<int> audioQueue = new Queue<int>(AUDIO_CAPACITY);
 
-    public ~SoundCloudCache()
-    {
-        if (Directory.Exists(SoundCloud.WORKING_DIRECTORY))
-            Directory.Delete(SoundCloud.WORKING_DIRECTORY);
-    }
-
-
-
     public void AddApiData(string apiCall, Object data)
     {
         while (apiDataQueue.Count > APIDATA_CAPACITY - 1)

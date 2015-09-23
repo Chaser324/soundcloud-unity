@@ -31,10 +31,19 @@ public class SoundCloudWWW : MonoBehaviour
 
         yield return StartCoroutine(WebRequest(request, (retVal) => response = retVal));
 
-        if (!string.IsNullOrEmpty(response.error) && response.responseHeaders.ContainsKey("LOCATION"))
+        if (string.IsNullOrEmpty(response.error))
         {
-            success = true;
-            resolvedURL = response.responseHeaders["LOCATION"];
+            // Construct base URL
+            SoundCloudGeneric data = new SoundCloudGeneric();
+            data.Deserialize(response.text);
+
+            if (!string.IsNullOrEmpty(data.uri))
+            {
+                success = true;
+                resolvedURL = data.uri + "?client_id=" + SoundCloudConfig.CLIENT_ID;
+            }
+
+            // TODO: Cache data so we don't retrieve it again
         }
 
         if (callback != null)
@@ -45,6 +54,12 @@ public class SoundCloudWWW : MonoBehaviour
     {
         WWW www = new WWW(uri);
         yield return www;
+
+        while (string.IsNullOrEmpty(www.error) && www.responseHeaders.ContainsKey("STATUS") && www.responseHeaders["STATUS"].Contains("302"))
+        {
+            // If there's a redirect, make another request.
+            yield return StartCoroutine(WebRequest(www.responseHeaders["LOCATION"], (retVal) => www = retVal));
+        }
 
         if (!string.IsNullOrEmpty(www.error))
         {
@@ -62,7 +77,7 @@ public class SoundCloudWWW : MonoBehaviour
         WWW response = null;
         yield return StartCoroutine(WebRequest(uri, (retVal) => response = retVal));
 
-        if (!string.IsNullOrEmpty(response.error))
+        if (string.IsNullOrEmpty(response.error))
         {
             target = new T();
             target.Deserialize(response.text);
@@ -78,9 +93,9 @@ public class SoundCloudWWW : MonoBehaviour
         WWW response = null;
         yield return StartCoroutine(WebRequest(uri, (retVal) => response = retVal));
 
-        if (!string.IsNullOrEmpty(response.error))
+        if (string.IsNullOrEmpty(response.error))
         {
-            tempFile = SoundCloud.WORKING_DIRECTORY + Path.DirectorySeparatorChar + outputFilename;
+            tempFile = SCManager.WORKING_DIRECTORY + Path.DirectorySeparatorChar + outputFilename;
             File.WriteAllBytes(tempFile, response.bytes);
         }
 
@@ -94,13 +109,28 @@ public class SoundCloudWWW : MonoBehaviour
         WWW response = null;
         yield return StartCoroutine(WebRequest(uri, (retVal) => response = retVal));
 
-        if (!string.IsNullOrEmpty(response.error))
+        if (string.IsNullOrEmpty(response.error))
         {
             clip = response.audioClip;
         }
 
         if (callback != null)
             callback(clip);
+    }
+
+    public IEnumerator WebRequestTexture(string uri, Action<Texture2D> callback)
+    {
+        Texture2D texture = null;
+        WWW response = null;
+        yield return StartCoroutine(WebRequest(uri, (retVal) => response = retVal));
+
+        if (string.IsNullOrEmpty(response.error))
+        {
+            texture = response.texture;
+        }
+
+        if (callback != null)
+            callback(texture);
     }
 
     public IEnumerator AuthenticateUser(Action<bool> callback)

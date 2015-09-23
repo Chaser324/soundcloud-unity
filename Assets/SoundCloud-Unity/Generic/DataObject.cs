@@ -6,6 +6,14 @@ public class DataObject<T> where T : class
 {
     private static readonly fsSerializer serializer = new fsSerializer();
 
+    public override string ToString()
+    {
+        fsData data;
+        serializer.TrySerialize(this as T, out data);
+
+        return fsJsonPrinter.PrettyJson(data);
+    }
+
     public bool Deserialize(string serializedData)
     {
         fsResult result = DeserializeObject(serializedData, this as T);
