@@ -10,10 +10,12 @@ namespace SoundCloud
 
 public class SCWeb : MonoBehaviour
 {
-    private const string CONNECT_URL = "https://soundcloud.com/connect/";
-    private const string RESOLVE_URL = "http://api.soundcloud.com/resolve?url=";
+    private const string CONNECT_URL = "https://soundcloud.com/connect/?client_id={0}&redirect_uri={1}&response_type=code";
+    private const string RESOLVE_URL = "http://api.soundcloud.com/resolve?url={0}&client_id={1}";
+    private const string REDIRECT_URL = "http://localhost:{0}/";
 
     private const int LISTEN_PORT = 8080;
+    private const int REDIRECT_LIMIT = 3;
 
     public bool authenticated { get; private set; }
 
@@ -27,7 +29,7 @@ public class SCWeb : MonoBehaviour
         bool success = false;
         WWW response = null;
         string resolvedURL = string.Empty;
-        string request = RESOLVE_URL + url + "&client_id=" + SCConfig.CLIENT_ID;
+        string request = string.Format(RESOLVE_URL, url, SCConfig.CLIENT_ID);
 
         yield return StartCoroutine(WebRequest(request, (retVal) => response = retVal));
 
@@ -55,10 +57,18 @@ public class SCWeb : MonoBehaviour
         WWW www = new WWW(uri);
         yield return www;
 
-        while (string.IsNullOrEmpty(www.error) && www.responseHeaders.ContainsKey("STATUS") && www.responseHeaders["STATUS"].Contains("302"))
+        int redirects = 0;
+        while (string.IsNullOrEmpty(www.error) && 
+               www.responseHeaders.ContainsKey("STATUS") && 
+               www.responseHeaders["STATUS"].Contains("302") && 
+               redirects <= REDIRECT_LIMIT)
         {
-            // If there's a redirect, make another request.
-            yield return StartCoroutine(WebRequest(www.responseHeaders["LOCATION"], (retVal) => www = retVal));
+            // If there's a redirect, follow it.
+            // WWW seems to do this automatically at times, but we'll do this just in case it doesn't.
+            www = new WWW(www.responseHeaders["LOCATION"]);
+            yield return www;
+
+            ++redirects;
         }
 
         if (!string.IsNullOrEmpty(www.error))
@@ -135,26 +145,29 @@ public class SCWeb : MonoBehaviour
 
     public IEnumerator AuthenticateUser(Action<bool> callback)
     {
-        string uriPrefix = "http://localhost:" + LISTEN_PORT + "/";
-        string connectUrl = CONNECT_URL + "?";
-        connectUrl += "client_id=" + SCConfig.CLIENT_ID;
-        connectUrl += "&redirect_uri=" + WWW.EscapeURL(uriPrefix + "unity-game-authentication");
-        connectUrl += "&response_type=code";
+        // TODO: Check if there's already have a saved OAuth token.
 
+        // Build local redirect listner address and the connection URL.
+        string uriPrefix = string.Format(REDIRECT_URL, LISTEN_PORT);
+        string connectUrl = string.Format(CONNECT_URL, SCConfig.CLIENT_ID, WWW.EscapeURL(uriPrefix + "unity-game-authentication"));
+
+        // Create redirect listner.
         HttpListener listener = new HttpListener();
         listener.Prefixes.Add(uriPrefix);
         listener.Start();
 
+        // Execute the listner on its own thread.
         Thread authListener = new Thread(
             () =>
             {
-                HttpListenerContext context = listener.GetContext();
+                HttpListenerContext context = listener.GetContext(); // This call blocks until there's a hit.
                 ProcessAuthRequest(context);
                 listener.Stop();
             }
         );
-
         authListener.Start();
+
+        // Open SoundCloud's app connect page.
         Application.OpenURL(connectUrl);
 
         // TODO: Add Authentication Timeout and Cancel.
@@ -173,10 +186,11 @@ public class SCWeb : MonoBehaviour
         HttpListenerResponse res = context.Response;
 
         Debug.Log(req.Url);
-        // TODO: Parse oauth code from url and save it to a file.
+        // TODO: Parse OAuth code from url and save it to a file.
 
         using (Stream outputStream = res.OutputStream)
         {
+            // TODO: Prepare a nice looking redirect page in a separate HTML file. Load it into response buffer.
             string responseString = "<HTML><BODY>Authenticated! You can now return to your game.</BODY></HTML>";
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             outputStream.Write(buffer, 0, buffer.Length);
