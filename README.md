@@ -8,6 +8,11 @@
 * **Basic Authentication Support** - Allow users to sign in to their own SoundCloud account to allow access to functions such as liking tracks and following other users.
 * **Windows, OSX, Linux** - Basic data retrieval should work anywhere. Full functionality on iOS/Android is possible but not currently a consideration. Unsure about the potential of full functionality on other platforms (PS4, Xbox One, etc.) - at a minimum it would require significant changes to the way audio transcoding is handled.
 
+![](https://pbs.twimg.com/media/CPjSc2jWoAAh4zL.png:large)
+> Screenshot from included test scene.
+
+***
+
 ## Using SoundCloud-Unity
 
 *TODO*
