@@ -11,8 +11,6 @@
 ![](https://pbs.twimg.com/media/CPjSc2jWoAAh4zL.png:large)
 > Screenshot from included test scene.
 
-***
-
 ## Using SoundCloud-Unity
 
 *TODO*

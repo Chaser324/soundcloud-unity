@@ -11,6 +11,7 @@ Bundles/
 ###############################
 # Visual Studio / MonoDevelop #
 ###############################
+.vscode/
 *.csproj
 *.unityproj
 *.sln
@@ -33,7 +34,6 @@ Bundles/
 #################
 # Visual Studio #
 #################
-.vscode/
 UnityVS/
 UnityVS.meta
 

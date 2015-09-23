@@ -58,9 +58,9 @@ public class SCWeb : MonoBehaviour
         yield return www;
 
         int redirects = 0;
-        while (string.IsNullOrEmpty(www.error) && 
-               www.responseHeaders.ContainsKey("STATUS") && 
-               www.responseHeaders["STATUS"].Contains("302") && 
+        while (string.IsNullOrEmpty(www.error) &&
+               www.responseHeaders.ContainsKey("STATUS") &&
+               www.responseHeaders["STATUS"].Contains("302") &&
                redirects <= REDIRECT_LIMIT)
         {
             // If there's a redirect, follow it.

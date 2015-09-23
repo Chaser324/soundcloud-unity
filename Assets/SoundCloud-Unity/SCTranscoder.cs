@@ -29,9 +29,9 @@ public class SCTranscoder : MonoBehaviour
         ffmpeg.StartInfo.UseShellExecute = false;
 
         ffmpeg.EnableRaisingEvents = true;
-        ffmpeg.Exited += (sender, args) => 
-            { 
-                if(ffmpeg.ExitCode == 0) 
+        ffmpeg.Exited += (sender, args) =>
+            {
+                if(ffmpeg.ExitCode == 0)
                     transcoded = true;
 
                 processComplete = true;
