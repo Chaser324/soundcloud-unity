@@ -50,6 +50,13 @@ public class SCManager : SingletonBehaviour<SCManager>
 
     protected void OnDestroy()
     {
+        // SoundCloud Terms of Use:
+        // "Your app may employ session-based caching, but only to the extent reasonably necessary for the operation of your app."
+        // "Except for session-based caching referred to above, your app must not offer offline access to any User Content including, 
+        // in the case of audio User Content, as permanent downloads or temporary downloads for offline listening"
+        // More Info: https://developers.soundcloud.com/docs/api/terms-of-use#caching
+
+        // We must make sure the entire cache is deleted at the end of a session.
         if (Directory.Exists(SCManager.WORKING_DIRECTORY))
             Directory.Delete(SCManager.WORKING_DIRECTORY, true);
     }
@@ -164,8 +171,13 @@ public class SCManager : SingletonBehaviour<SCManager>
 
         if (transcodeSuccess)
         {
+            
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+            // On windows, we need to prepend "file:///" when accessing a local file through WWW.
+            outputFilePath = "file:///" + outputFilePath;
+#endif
             // Load the transcoded audio file as an AudioClip.
-            yield return StartCoroutine(web.WebRequestAudioClip("file:///" + outputFilePath, (retVal) => clip = retVal));
+            yield return StartCoroutine(web.WebRequestAudioClip(outputFilePath, (retVal) => clip = retVal));
         }
 
         if (callback != null)

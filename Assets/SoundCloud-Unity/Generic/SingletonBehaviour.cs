@@ -77,7 +77,7 @@ public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 
                     if (instance == null)
                     {
-                        GameObject go = new GameObject("(singleton) " + typeof(T).ToString());
+                        GameObject go = new GameObject(typeof(T).ToString());
                         instance = go.AddComponent<T>();
 
                         Debug.Log("[Singleton] Created instance of " + typeof(T) + ".");

@@ -8,6 +8,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(AudioSource))]
 public class Tester : MonoBehaviour
 {
+    #region Private Variables
+
     private Text console;
     private Text input;
     private AudioSource audioSource;
@@ -15,6 +17,10 @@ public class Tester : MonoBehaviour
     private SCTrack currentTrack;
 
     private float[] musicSpectrum = new float[32];
+
+    #endregion
+
+    #region Unity Events
 
     public IEnumerator Start()
     {
@@ -33,6 +39,10 @@ public class Tester : MonoBehaviour
         StartCoroutine(ShowTrackProgress());
         StartCoroutine(AnalyzeMusicSpectrum());
     }
+
+    #endregion
+
+    #region Public Methods
 
     public void SignIn()
     {
@@ -69,6 +79,10 @@ public class Tester : MonoBehaviour
         if (currentTrack != null)
             Application.OpenURL(currentTrack.permalink_url);
     }
+
+    #endregion
+
+    #region Private Methods
 
     private void ConnectCallback(bool success)
     {
@@ -195,4 +209,6 @@ public class Tester : MonoBehaviour
             yield return 0;
         }
     }
+
+    #endregion
 }
