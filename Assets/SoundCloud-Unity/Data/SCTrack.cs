@@ -6,6 +6,7 @@ public class SCTrack : DataObject<SCTrack>
 {
     public const string API_CALL = "http://api.soundcloud.com/tracks/{0}?client_id={1}";
 
+    // API call return fields
     public int id { get; protected set; }
     public string created_at { get; protected set; }
     public int user_id { get; protected set; }
@@ -50,6 +51,18 @@ public class SCTrack : DataObject<SCTrack>
 
     // authenticated requests only
     public bool user_favorite { get; protected set; }
+
+    // convenience properties
+    public string authenticatedStreamUrl
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(stream_url))
+                return stream_url + "?client_id=" + SCConfig.CLIENT_ID;
+            else
+                return string.Empty;
+        }
+    }
 }
 
 }

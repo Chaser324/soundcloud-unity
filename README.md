@@ -9,7 +9,7 @@
 * **Windows, OSX, Linux** - Basic data retrieval should work anywhere. Full functionality on iOS/Android is possible but not currently a consideration. Unsure about the potential of full functionality on other platforms (PS4, Xbox One, etc.) - at a minimum it would require significant changes to the way audio transcoding is handled.
 
 ![](http://i.imgur.com/EGeGq1o.png)
-> Screenshot from included test scene.
+*Screenshot from included test scene.*
 
 ## Using SoundCloud-Unity
 

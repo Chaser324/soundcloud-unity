@@ -65,47 +65,47 @@ public class SCManager : SingletonBehaviour<SCManager>
 
     #region Public Methods
 
-    public static void Connect(Action<bool> callback)
+    public static void Connect(Action<SCError> callback)
     {
         Instance.StartCoroutine(Instance.web.AuthenticateUser(callback));
     }
 
-    public static void GetImage(string url, Action<Texture2D> callback)
+    public static void GetImage(string url, Action<SCError, Texture2D> callback)
     {
         Instance.StartCoroutine(Instance.web.WebRequestTexture(url, callback));
     }
 
-    public static void GetDataType(string url, Action<string, Type> callback)
+    public static void GetDataType(string url, Action<SCError, string, Type> callback)
     {
         Instance.StartCoroutine(Instance.ProcessGenericDataCall(url, callback));
     }
 
-    public static void GetUser(string url, Action<SCUser> callback)
+    public static void GetUser(string url, Action<SCError, SCUser> callback)
     {
         Instance.StartCoroutine(Instance.ProcessDataCall(url, callback));
     }
 
-    public static void GetUser(int id, Action<SCUser> callback)
+    public static void GetUser(int id, Action<SCError, SCUser> callback)
     {
         GetUser(string.Format(SCUser.API_CALL, id, SCConfig.CLIENT_ID), callback);
     }
 
-    public static void GetTrack(string url, Action<SCTrack> callback)
+    public static void GetTrack(string url, Action<SCError, SCTrack> callback)
     {
         Instance.StartCoroutine(Instance.ProcessDataCall(url, callback));
     }
 
-    public static void GetTrack(int id, Action<SCTrack> callback)
+    public static void GetTrack(int id, Action<SCError, SCTrack> callback)
     {
         GetTrack(string.Format(SCTrack.API_CALL, id, SCConfig.CLIENT_ID), callback);
     }
 
-    public static void GetTrackAudioClip(string url, Action<AudioClip> callback)
+    public static void GetTrackAudioClip(string url, Action<SCError, AudioClip> callback)
     {
         Instance.StartCoroutine(Instance.ProcessGetAudioTrack(url, callback));
     }
 
-    public static void GetTrackAudioClip(int id, Action<AudioClip> callback)
+    public static void GetTrackAudioClip(int id, Action<SCError, AudioClip> callback)
     {
         GetTrackAudioClip(string.Format(SCTrack.API_CALL, id, SCConfig.CLIENT_ID), callback);
     }
@@ -143,48 +143,63 @@ public class SCManager : SingletonBehaviour<SCManager>
         return url.Contains("api.soundcloud.com");
     }
 
-    private IEnumerator ProcessGetAudioTrack(string url, Action<AudioClip> callback)
+    private IEnumerator ProcessGetAudioTrack(string url, Action<SCError, AudioClip> callback)
     {
+        SCError error = SCError.OK;
         AudioClip clip = null;
 
         // Get the track data.
         SCTrack track = null;
-
         if (!IsAPI(url))
-            yield return StartCoroutine(web.ProcessResolveURL(url, (success, resolvedURL) => { if (success) url = resolvedURL; }));
+            yield return StartCoroutine(web.ProcessResolveURL(url, (callError, resolvedURL) => { error = callError; url = resolvedURL; }));
 
-        if (IsAPI(url))
-            yield return StartCoroutine(ProcessDataCall<SCTrack>(url, (retVal) => track = retVal));
+        if (error == SCError.OK && IsAPI(url))
+            yield return StartCoroutine(ProcessDataCall<SCTrack>(url, (callError, retVal) => { error = callError; track = retVal; }));
+
+        // Check that track is streamable.
+        if (error == SCError.OK && track != null && !track.streamable)
+            error = SCError.NotStreamable;
 
         // Get the MP3 stream.
         string mp3FilePath = string.Empty;
-        yield return StartCoroutine(web.WebRequestFile(track.stream_url + "?client_id=" + SCConfig.CLIENT_ID, TEMP_FILENAME, (retVal) => mp3FilePath = retVal));
+        if (error == SCError.OK)
+        {
+            yield return StartCoroutine(web.WebRequestFile(track.authenticatedStreamUrl, TEMP_FILENAME,
+                (callError, retVal) => { error = callError; mp3FilePath = retVal; }));
+        }
 
         // Transcode to OGG.
-        bool transcodeComplete = false;
-        bool transcodeSuccess = false;
-        string outputFilePath = WORKING_DIRECTORY + "/" + track.id + ".ogg";
-        transcoder.Transcode(mp3FilePath, outputFilePath, (retVal) => { transcodeSuccess = retVal; transcodeComplete = true; });
+        string outputFilePath = "";
+        if (error == SCError.OK)
+        {
+            bool transcodeComplete = false;
+            bool transcodeSuccess = false;
+            outputFilePath = WORKING_DIRECTORY + "/" + track.id + ".ogg";
 
-        while (!transcodeComplete)
-            yield return 0;
+            transcoder.Transcode(mp3FilePath, outputFilePath, (callError) => { error = callError; transcodeComplete = true; });
+            while (!transcodeComplete)
+                yield return 0;
 
-        if (transcodeSuccess)
+            if (!transcodeSuccess)
+
+        }
+
+        // Load the transcoded audio file as an AudioClip.
+        if (error == SCError.OK)
         {
 
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
             // On windows, we need to prepend "file:///" when accessing a local file through WWW.
             outputFilePath = "file:///" + outputFilePath;
 #endif
-            // Load the transcoded audio file as an AudioClip.
-            yield return StartCoroutine(web.WebRequestAudioClip(outputFilePath, (retVal) => clip = retVal));
+            yield return StartCoroutine(web.WebRequestAudioClip(outputFilePath, (callError, retVal) => clip = retVal));
         }
 
         if (callback != null)
-            callback(clip);
+            callback(error, clip);
     }
 
-    private IEnumerator ProcessGenericDataCall(string url, Action<string, Type> callback)
+    private IEnumerator ProcessGenericDataCall(string url, Action<SCError, string, Type> callback)
     {
         // TODO: Refactor the way unknown generic data calls are handled based on automatically following
         //       redirect and getting the "kind" and "uri" from the resulting SCGeneric.
@@ -205,7 +220,7 @@ public class SCManager : SingletonBehaviour<SCManager>
             callback(url, returnType);
     }
 
-    private IEnumerator ProcessDataCall<T>(string url, Action<T> callback) where T : DataObject<T>, new()
+    private IEnumerator ProcessDataCall<T>(string url, Action<SCError, T> callback) where T : DataObject<T>, new()
     {
         T data = null;
 

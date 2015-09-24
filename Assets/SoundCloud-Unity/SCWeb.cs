@@ -24,7 +24,7 @@ public class SCWeb : MonoBehaviour
         authenticated = false;
     }
 
-    public IEnumerator ProcessResolveURL(string url, Action<bool, string> callback)
+    public IEnumerator ProcessResolveURL(string url, Action<SCError, string> callback)
     {
         bool success = false;
         WWW response = null;
@@ -52,7 +52,7 @@ public class SCWeb : MonoBehaviour
             callback(success, resolvedURL);
     }
 
-    public IEnumerator WebRequest(string uri, Action<WWW> callback)
+    public IEnumerator WebRequest(string uri, Action<SCError, WWW> callback)
     {
         WWW www = new WWW(uri);
         yield return www;
@@ -81,7 +81,7 @@ public class SCWeb : MonoBehaviour
             callback(www);
     }
 
-    public IEnumerator WebRequestObject<T>(string uri, Action<T> callback) where T : DataObject<T>, new()
+    public IEnumerator WebRequestObject<T>(string uri, Action<SCError, T> callback) where T : DataObject<T>, new()
     {
         T target = null;
         WWW response = null;
@@ -97,7 +97,7 @@ public class SCWeb : MonoBehaviour
             callback(target);
     }
 
-    public IEnumerator WebRequestFile(string uri, string outputFilename, Action<string> callback)
+    public IEnumerator WebRequestFile(string uri, string outputFilename, Action<SCError, string> callback)
     {
         string tempFile = string.Empty;
         WWW response = null;
@@ -113,7 +113,7 @@ public class SCWeb : MonoBehaviour
             callback(tempFile);
     }
 
-    public IEnumerator WebRequestAudioClip(string uri, Action<AudioClip> callback)
+    public IEnumerator WebRequestAudioClip(string uri, Action<SCError, AudioClip> callback)
     {
         AudioClip clip = null;
         WWW response = null;
@@ -128,7 +128,7 @@ public class SCWeb : MonoBehaviour
             callback(clip);
     }
 
-    public IEnumerator WebRequestTexture(string uri, Action<Texture2D> callback)
+    public IEnumerator WebRequestTexture(string uri, Action<SCError, Texture2D> callback)
     {
         Texture2D texture = null;
         WWW response = null;
@@ -143,7 +143,7 @@ public class SCWeb : MonoBehaviour
             callback(texture);
     }
 
-    public IEnumerator AuthenticateUser(Action<bool> callback)
+    public IEnumerator AuthenticateUser(Action<SCError> callback)
     {
         // TODO: Check if there's already have a saved OAuth token.
 
